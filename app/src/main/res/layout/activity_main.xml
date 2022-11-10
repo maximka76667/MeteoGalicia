@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp"
+    tools:context="com.example.meteogalicia.MainActivity">
+
+    <Button
+        android:id="@+id/button_localidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/imageButton_telefono"
+        android:text="@string/selectLocalidad" />
+
+    <ImageButton
+        android:id="@+id/imageButton_telefono"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/button_localidad"
+        android:layout_alignBottom="@id/button_localidad"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/call"
+        android:scaleType="fitXY"
+        app:srcCompat="@android:drawable/stat_sys_phone_call" />
+
+    <WebView
+        android:id="@+id/webView_pronostico"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/button_localidad"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>
