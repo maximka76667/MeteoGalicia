@@ -35,12 +35,9 @@ public class MeteoGaliciaCortoPlazo {
             // Si existe de una ejecucion anterior borramos el fichero
             nombreFichero = localidad.getCodigo() + ".html";
             File dir = contexto.getFilesDir();
-            System.out.println(dir);
-
             File fichero = new File(dir, nombreFichero);
             fichero.delete();
-
-
+            
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setIgnoringComments(true);
             dbf.setCoalescing(true);
@@ -105,7 +102,6 @@ public class MeteoGaliciaCortoPlazo {
         } catch (Exception e) {
             Log.e("Pronostico", "Error al establecer conexión.");
             e.printStackTrace();
-            System.out.println(e.getMessage());
             return null;
         } finally {
             try {

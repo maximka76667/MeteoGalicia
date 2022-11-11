@@ -12,11 +12,13 @@ import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.meteogalicia.NoModificar.MeteoGaliciaCortoPlazo;
+import com.example.meteogalicia.NoModificar.Utilidades;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
                 dialog_localidad.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        if (!Utilidades.existeConexionInternet(MainActivity.this)) {
+                            Toast.makeText(MainActivity.this, "Error conexion", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         Task task = new Task();
                         task.execute(localidades[i]);
                         dialogInterface.cancel();
@@ -98,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
             super.onPreExecute();
             progressDialog = new ProgressDialog(MainActivity.this);
             progressDialog.setMessage("Descargando...");
-            progressDialog.setProgressStyle();
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.show();
         }
 
         @Override
@@ -114,6 +121,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String url) {
             super.onPostExecute(url);
+            progressDialog.dismiss();
+            if (url == null) {
+                Toast.makeText(MainActivity.this, "Error al cargar página. Intentálo de nuevo", Toast.LENGTH_LONG).show();
+                return;
+            }
             webView_pronostico.loadUrl("file:///" + url);
         }
     }
