@@ -18,13 +18,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.meteogalicia.NoModificar.MeteoGaliciaCortoPlazo;
+import com.example.meteogalicia.NoModificar.MeteoGaliciaCortoPlazo.LocalidadMeteoGalicia;
 import com.example.meteogalicia.NoModificar.Utilidades;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final LocalidadMeteoGalicia[] localidades = MeteoGaliciaCortoPlazo.getLocalidades();
     // Variables útiles para la ventana de diálogo:
-    private final int ultimaLocalidadSeleccionada = -1;
-    private final MeteoGaliciaCortoPlazo.LocalidadMeteoGalicia[] localidades = MeteoGaliciaCortoPlazo.getLocalidades();
+    private int ultimaLocalidadSeleccionada = -1;
     private Button button_localidad;
     private ImageButton imageButton_telefono;
     private WebView webView_pronostico;
@@ -48,19 +49,18 @@ public class MainActivity extends AppCompatActivity {
         button_localidad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_dropdown_item_1line, localidades);
+                ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.select_dialog_singlechoice, localidades);
                 AlertDialog.Builder dialog_localidad = new AlertDialog.Builder(MainActivity.this);
 
-                dialog_localidad.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
+                dialog_localidad.setTitle("Seleccione localidad");
+
+                dialog_localidad.setSingleChoiceItems(adapter, ultimaLocalidadSeleccionada, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (!Utilidades.existeConexionInternet(MainActivity.this)) {
-                            Toast.makeText(MainActivity.this, "Error conexion", Toast.LENGTH_LONG).show();
-                            return;
-                        }
                         Task task = new Task();
+                        ultimaLocalidadSeleccionada = i;
                         task.execute(localidades[i]);
-                        dialogInterface.cancel();
+                        dialogInterface.dismiss();
                     }
                 });
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    class Task extends AsyncTask<MeteoGaliciaCortoPlazo.LocalidadMeteoGalicia, Integer, String> {
+    class Task extends AsyncTask<LocalidadMeteoGalicia, Void, String> {
 
         ProgressDialog progressDialog;
 
@@ -102,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPreExecute() {
             super.onPreExecute();
+            if (!Utilidades.existeConexionInternet(MainActivity.this)) {
+                cancel(true);
+            }
             progressDialog = new ProgressDialog(MainActivity.this);
             progressDialog.setMessage("Descargando...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -109,24 +112,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(MeteoGaliciaCortoPlazo.LocalidadMeteoGalicia... localidades) {
+        protected String doInBackground(LocalidadMeteoGalicia... localidades) {
             return MeteoGaliciaCortoPlazo.obtenPronostico(MainActivity.this, localidades[0]);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
         }
 
         @Override
         protected void onPostExecute(String url) {
             super.onPostExecute(url);
-            progressDialog.dismiss();
-            if (url == null) {
-                Toast.makeText(MainActivity.this, "Error al cargar página. Intentálo de nuevo", Toast.LENGTH_LONG).show();
-                return;
-            }
             webView_pronostico.loadUrl("file:///" + url);
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            Toast.makeText(MainActivity.this, "Error conexion", Toast.LENGTH_LONG).show();
+            progressDialog.dismiss();
         }
     }
 

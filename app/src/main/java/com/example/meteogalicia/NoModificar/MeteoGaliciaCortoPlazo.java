@@ -29,15 +29,14 @@ public class MeteoGaliciaCortoPlazo {
     // Devuelve la ruta hacia el fichero html con el pronóstico descargado del servidor de MeteoGalicia de la localidad correspondiente.
     public static String obtenPronostico(Context contexto, LocalidadMeteoGalicia localidad) {
         InputStream entrada = null;
-        String nombreFichero = null;
 
         try {
             // Si existe de una ejecucion anterior borramos el fichero
-            nombreFichero = localidad.getCodigo() + ".html";
+            String nombreFichero = localidad.getCodigo() + ".html";
             File dir = contexto.getFilesDir();
             File fichero = new File(dir, nombreFichero);
             fichero.delete();
-            
+
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setIgnoringComments(true);
             dbf.setCoalescing(true);

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">MeteoGalicia</string>
-    <string name="selectLocalidad">Seleccione localidade</string>
+    <string name="selectLocalidad">Seleccione localidad</string>
     <string name="call">Boton llamada</string>
 </resources>
